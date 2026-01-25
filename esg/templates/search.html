@@ -1,0 +1,66 @@
+{% extends 'basic.html' %}
+{% load static %}
+{% load querystring %}
+
+{% block title %}Результаты поиска по запросу — СпецЭлектроБелТорг{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/catalog.css' %}">
+{% endblock %}
+{% block meta %}
+<meta name="description" content="Результаты поиска по запросу в каталоге электротоваров: кабели, электроустановочные изделия, системы электроснабжения. Найдите нужный товар быстро и удобно.">
+<meta name="robots" content="index, follow">
+<meta name="author" content="СпецЭлектроБелТорг, Логойск">
+{% endblock %}
+{% block content %}
+<main class="main-content">
+  <a href="{% url 'catalog' %}" class="catalog-btn">Посмотреть весь каталог</a>
+  <div class="catalog-top-buttons">
+    {% for rubric in rubrics %}
+      <a href="{% url 'subrubrics' rubric.name_translit %}" class="catalog-btn">
+        {% if rubric.rubric_name == "Электрика" %}
+          <i class="fas fa-bolt"></i>
+        {% elif rubric.rubric_name == "Сантехника" %}
+          <i class="fas fa-faucet"></i>
+        {% elif rubric.rubric_name == "Газификация" %}
+          <i class="fas fa-fire"></i>
+        {% else %}
+          <i class="fas fa-folder"></i>
+        {% endif %}
+        <span>{{ rubric.rubric_name }}</span>
+      </a>
+    {% endfor %}
+  </div>
+  <section class="search-section">
+    <h2 class="search-title">Результаты по запросу</h2>
+    {% if results %}
+     <div class="products-grid">
+        {% for product in results %}
+          <div class="product-card-catalog">
+            {% if product.photo %}
+              <img src="{{ product.photo.url }}" alt="{{ product.title }}">
+            {% else %}
+              <img src="{% static 'image/default-product.png' %}" alt="Нет изображения">
+            {% endif %}
+            {% if product.rubric_name_translit and product.subrubric_title_translit and product.product_title_translit %}
+              <a href="{% url 'product' product.rubric_name_translit product.subrubric_title_translit product.product_title_translit %}">
+                <h3>{{ product.title }}</h3>
+              </a>
+            {% else %}
+              <h3>{{ product.title }}</h3>
+            {% endif %}
+            <div class="card-bottom">
+              {% if product.price %}
+              <p class="price">{{ product.price }} BYN</p>
+              <button  type="button" class="basket" data-title="{{ product.title }}" data-price="{{ product.price|floatformat:2 }}">Купить</button>
+              {% else %}
+              <p class="price_no">Уточняйте цену</p>
+              {% endif %}
+          </div></div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="no-results">Ничего не найдено 😕 Попробуйте изменить поисковый запрос</p>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

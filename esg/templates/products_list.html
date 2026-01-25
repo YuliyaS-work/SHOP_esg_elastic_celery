@@ -1,0 +1,130 @@
+{% extends 'basic.html' %}
+{% load static %}
+{% load querystring %}
+
+{% block title %}Каталог электротоваров — СпецЭлектроБелТорг, Логойск{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/catalog.css' %}">
+{% endblock %}
+{% block meta %}
+<meta name="description" content="Каталог электротоваров: кабели, электроустановочные изделия, системы электроснабжения. Продажа в Логойске от СпецЭлектроБелТорг.">
+<meta name="keywords" content="электротовары, кабели, электроустановочные изделия, электроснабжение, монтаж, продажа, Логойск">
+<meta name="robots" content="index, follow">
+<meta name="author" content="СпецЭлектроБелТорг, Логойск">
+{% endblock %}
+{% block content %}
+<main class="main-content">
+
+     <!--  ===кнопка Каталог===-->
+  <a href="{% url 'catalog' %}" class="catalog-btn">Посмотреть весь каталог</a>
+
+ <!-- === Верхние кнопки разделов === -->
+  <div class="catalog-top-buttons">
+    {% for rubric in rubrics %}
+      <a href="{% url 'subrubrics' rubric.name_translit %}" class="catalog-btn">
+        {% if rubric.rubric_name == "Электрика" %}
+          <i class="fas fa-bolt"></i>
+        {% elif rubric.rubric_name == "Сантехника" %}
+          <i class="fas fa-faucet"></i>
+        {% elif rubric.rubric_name == "Газификация" %}
+          <i class="fas fa-fire"></i>
+        {% else %}
+          <i class="fas fa-folder"></i>
+        {% endif %}
+        <span>{{ rubric.rubric_name }}</span>
+      </a>
+    {% endfor %}
+  </div>
+
+{% include 'includes/breadcrumbs.html' %}
+
+<!--   ===сортировка===    -->
+  <form method="get" id="sortForm">
+  <input type="hidden" id="sort" name="page" value="{{ request.GET.page }}">
+  <label for="sort">Сортировать по:</label>
+  <select name="sort" onchange="this.form.submit()">
+    <option value="">-- Выберите --</option>
+    <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>По возрастанию цены</option>
+    <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>По убыванию цены</option>
+    <option value="title_asc" {% if request.GET.sort == 'title_asc' %}selected{% endif %}>По алфавиту (А-Я)</option>
+    <option value="title_desc" {% if request.GET.sort == 'title_desc' %}selected{% endif %}>По алфавиту (Я-А)</option>
+    <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Популярные</option>
+  </select>
+</form>
+
+
+  <!-- === Все товары === -->
+  <section class="products-section">
+  <div class="products-grid">
+    {% for product in page_obj %}
+      <div class="product-card-catalog">
+        {% if product.photo %}
+          <img src="{{ product.photo.url }}" alt="{{ product.title }}">
+        {% else %}
+          <img src="{% static 'image/default-product.png' %}" alt="Нет изображения">
+        {% endif %}
+
+         <!-- ==название товара для генерации карусели просмотренных товаров=== -->
+         {% include 'includes/product_card_for_viewed.html' %}
+        <div class="card-bottom">
+          {% if product.price %}
+          <p class="price">{{ product.price }} BYN</p>
+          <button  type="button" class="basket" data-title="{{ product.title }}" data-price="{{ product.price|floatformat:2 }}">Купить</button>
+          {% else %}
+          <p class="price_no">Уточняйте цену</p>
+          {% endif %}
+      </div> </div>
+    {% endfor %}
+  </div>
+  </section>
+
+
+
+    <!-- ===Пагинация===-->
+  <div class="pagination">
+    {% if page_obj.has_other_pages %}
+      <nav class="list-pages">
+        <ul>
+          {# Первая и предыдущая страницы #}
+          {% if page_obj.has_previous %}
+            <li class="page-num"><a href="?{% querystring page=1 %}"> <<</a></li>
+            <li class="page-num"><a href="?{% querystring page=page_obj.previous_page_number %}"> <</a></li>
+          {% endif %}
+
+          {# Номера страниц: текущая, соседние #}
+          {% for p in page_obj.paginator.page_range %}
+            {% if p == page_obj.number %}
+              <li class="page-num page-num-selected">
+                  <form method="get" action="">
+                     <input type="hidden" name="sort" value="{{ request.GET.sort }}">
+                  <input type="number"
+                  name="page"
+                  value="{{ p }}"
+                  min="1"
+                  max="{{ page_obj.paginator.num_pages }}"
+                  onchange="this.form.submit()"
+                  class="page-input">
+                  </form>
+              </li>
+            {% elif p >= page_obj.number|add:-1 and p <= page_obj.number|add:1 %}
+              <li class="page-num"><a href="?{% querystring page=p %}">{{ p }}</a></li>
+            {% endif %}
+          {% endfor %}
+
+          {# Следующая и последняя страницы #}
+          {% if page_obj.has_next %}
+            <li class="page-num"><a href="?{% querystring page=page_obj.next_page_number %}"> ></a></li>
+            <li class="page-num"><a href="?{% querystring page=page_obj.paginator.num_pages %}"> >></a></li>
+          {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/viewed.js' %}" defer></script>
+{% endblock %}

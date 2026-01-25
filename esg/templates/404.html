@@ -1,0 +1,23 @@
+{% extends "basic.html" %}
+{% load static %}
+
+{% block title %}404 — Страница не найдена{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/404.css' %}">
+{% endblock %}
+{% block content %}
+<main class="ups">
+    <img src="{% static 'image/404-4.jpg' %}" alt="404 Not Found" class="error-image">
+
+    <h1 class="mt">Упс! Страница не найдена 😕</h1>
+    <p class="mtp">
+        Похоже, вы перешли по несуществующей ссылке.<br>
+        Попробуйте вернуться на главную страницу или перейти в каталог.
+    </p>
+    <div class="button_container_404">
+        <a href="{% url 'main' %}" class="mtpr">На главную</a>
+        <a href="{% url 'catalog' %}" class="button-links">Каталог</a>
+    </div>
+
+</main>
+{% endblock %}

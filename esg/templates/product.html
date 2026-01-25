@@ -1,0 +1,94 @@
+{% extends 'basic.html' %}
+{% load static %}
+{% load querystring %}
+
+{% block title %}Каталог электротоваров — СпецЭлектроБелТорг, Логойск{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/catalog.css' %}">
+{% endblock %}
+{% block meta %}
+<meta name="description" content="Каталог электротоваров: кабели, электроустановочные изделия, системы электроснабжения.">
+<meta name="keywords" content="электротовары, кабели, электроустановочные изделия, электроснабжение, монтаж, продажа, Логойск">
+{% endblock %}
+{% block content %}
+<main class="main-content">
+  <a href="{% url 'catalog' %}" class="catalog-btn">Каталог</a>
+  <div class="catalog-top-buttons">
+    {% for rubric in rubrics %}
+      <a href="{% url 'subrubrics' rubric.name_translit %}" class="catalog-btn">
+        {% if rubric.rubric_name == "Электрика" %}
+          <i class="fas fa-bolt"></i>
+        {% elif rubric.rubric_name == "Сантехника" %}
+          <i class="fas fa-faucet"></i>
+        {% elif rubric.rubric_name == "Газификация" %}
+          <i class="fas fa-fire"></i>
+        {% else %}
+          <i class="fas fa-folder"></i>
+        {% endif %}
+        <span>{{ rubric.rubric_name }}</span>
+      </a>
+    {% endfor %}
+  </div>
+    {% include 'includes/breadcrumbs.html' %}
+<div class="product-card-single">
+    <div class="product-card-content">
+    <div class="product-image-container">
+    {% if product.photo %}
+        <img id="product-photo" src="{{ product.photo_big.url }}" alt="{{ product.title }}">
+        {% else %}
+        <img src="{% static 'image/default-product.png' %}" alt="Нет изображения">
+        {% endif %}
+        <div class="product-info">
+            <h3>{{ product.title }}</h3>
+    {% if product %}
+        <p><b>Код товара:</b> {{product.code}}</p>
+        <p class="description"><b>Описание:</b><br>{{ product.description|default:"Нет описания" }}</p>
+    {% endif %}
+        <p class="price"><b>Цена: </b>
+            {% if product.price %}
+                {{ product.price }} BYN </p>
+            <button type="button" data-title="{{ product.title }}" data-price="{{ product.price|floatformat:2 }}" class="basket">Купить</button>
+            {% else %}
+                <p class="price_no">по запросу</p>
+           {% endif %}
+</div>
+    </div>
+    </div>
+</div>
+    <div style="text-align: center;">
+    <a href="{% url 'products'  product.rubric.rubric.name_translit product.rubric.title_translit %}" class="product_exit">
+        ВЕРНУТЬСЯ В РАЗДЕЛ: {{ product.rubric.title }}
+    </a></div>
+  <div id="lightbox" class="lightbox">
+    <div class="lightbox-content">
+        <span class="close">&times;</span>
+        <img id="lightbox-img" src="" alt="Увеличенное фото" />
+    </div>
+  </div>
+</main>
+{% endblock %}
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const productPhoto = document.getElementById('product-photo');
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const closeBtn = lightbox.querySelector('.close');
+  productPhoto.addEventListener('click', () => {
+    lightboxImg.src = productPhoto.src;
+    lightbox.style.display = 'flex';
+  });
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      lightbox.style.display = 'none';
+    });
+  }
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) {
+      lightbox.style.display = 'none';
+    }
+  });
+});
+</script>
+{% endblock %}

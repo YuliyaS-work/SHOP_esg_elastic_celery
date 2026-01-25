@@ -1,0 +1,124 @@
+{% extends 'basic.html' %}
+{% load static %}
+
+{% block title %}Корзина — Электротовары Логойск | СпецЭлектроБелТорг{% endblock %}
+    {% block styles %}
+    <link rel="stylesheet" href="{% static 'css/basket.css' %}">
+{% endblock %}
+{% block meta %}
+<meta name="description" content="Корзина товаров на сайте СпецЭлектроБелТорг">
+<meta name="keywords" content="корзина, заказ, электротовары, Логойск, СпецЭлектроБелТорг">
+<meta name="robots" content="noindex, follow">
+{% endblock %}
+{% block content %}
+<main class="main-content">
+  <!-- === Корзина === -->
+<section id="basket-container">
+  <h2>Ваша корзина</h2>
+<!--нужен для js, в basket.js на 17-26 строчке-->
+<div id="basket"></div>
+  <hr>
+  <p>Выберите нужный Вам товар из нашего каталога и нажмите кнопку "Оформить заказ"</p>
+    <p>либо воспользуйтесь поиском, чтобы найти всё что нужно.</p>
+ <a href="{% url 'catalog' %}" class="catalog-link">Добавить товар</a>
+</section>
+
+  <!-- === Оформление заказа === -->
+<!--это связано с order_form.js-->
+<div id="overlay"></div>
+<form id="order-form" data-url="{% url 'order_api_create' %}">
+  {% csrf_token %}
+  <button type="button" id="close-order-form" class="close-btn">&times;</button>
+  <h2 style="text-align: center;">Оформление заказа</h2>
+    <label for="first_name">Имя:</label>
+      <input id="first_name" type="text" name="first_name" required>
+    <label for="last_name">Фамилия:</label>
+      <input id="last_name" type="text" name="last_name" required>
+    <label for="phone">Телефон (+375 ХХ ХХХХХХХ):</label>
+      <input type="tel" name="phone" id="phone" required>
+    <label for="mail">Электронная почта:</label>
+      <input type="email" name="mail" id="mail">
+
+    <label class="agreement-wrapper">
+  <input type="checkbox" id="agreement" name="agreement" required class="agreement">
+  <span class="agreem">Я даю согласие на обработку персональных данных в соответствии с <a href="{% url 'privacy' %}#personal-data" target="_blank" class="agree" rel="noopener">Политикой обработки персональных данных</a></span>
+</label>
+    <label class="agreement-wrapper">
+  <input type="checkbox" required class="agreement">
+  <span class="agreem">
+    Я принимаю условия
+    <a href="{% url 'privacy' %}#oferta" target="_blank" rel="noopener" class="agree">Договора публичной оферты</a>
+  </span>
+</label>
+
+  <div id="response-message-error" style="color:red;"></div>
+  <button class="send-btn" type="submit">Подтвердить заказ</button>
+</form>
+
+<div id="response-message"></div>
+
+<!--Просмотренные товары-->
+<div id="viewed-products-container"></div>
+
+
+<!--Популярные товары-->
+    <div style="text-align: center; margin-bottom: 10px; margin-top: 10px;">
+    <h2 style="color: black; border-bottom: 2px solid #e6c200; display: inline-block; padding-bottom: 5px;">Популярные товары</h2>
+        </div> <div class="carousel-wrapper">
+              <div class="product-carousel">
+            {% for product in popular_products %}
+            <div class="product-new-catalog">
+              {% if product.photo %}
+                <img src="{{ product.photo.url }}" alt="{{ product.title }}">
+              {% else %}
+                <img src="{% static 'image/default-product.png' %}" alt="Нет изображения">
+              {% endif %}
+                 <!--  === название товара адаптированное для вывода в "Вы смотрели" -->
+         {% if product.photo %}
+         {% static 'image/default-product.png' as default_photo %}
+           <a href="{% url 'product' product.rubric.rubric.name_translit product.rubric.title_translit product.title_translit %}"
+             class="product-title"
+             data-id="{{ product.pk }}"
+             data-title="{{ product.title }}"
+             data-product_title_translit = "{{ product.title_translit }}"
+             data-photo="{{ product.photo.url }}"
+             data-price="{{ product.price|floatformat:2 }}"
+             data-rubric_name_translit="{{ product.rubric.rubric.name_translit }}"
+             data-subrubric_title_translit="{{ product.rubric.title_translit }}"
+             data-url="{% url 'product' product.rubric.rubric.name_translit product.rubric.title_translit product.title_translit %}">
+             <h3>{{ product.title }}</h3></a>
+         {% else %}
+         {% static 'image/default-product.png' as default_photo %}
+           <a href="{% url 'product' product.rubric.rubric.name_translit product.rubric.title_translit product.title_translit %}"
+             class="product-title"
+             data-id="{{ product.pk }}"
+             data-title="{{ product.title }}"
+             data-product_title_translit = "{{ product.title_translit }}"
+             data-photo="{{ default_photo }}"
+             data-price="{{ product.price|floatformat:2 }}"
+             data-rubric_name_translit="{{ product.rubric.rubric.name_translit }}"
+             data-subrubric_title_translit="{{ product.rubric.title_translit }}"
+             data-url="{% url 'product' product.rubric.rubric.name_translit product.rubric.title_translit product.title_translit %}">
+             <h3>{{ product.title }}</h3></a>
+         {% endif %}
+              <div class="card-bottom">
+                {% if product.price %}
+                <p class="price">{{ product.price }} BYN</p>
+                <button  type="button" class="basket" data-title="{{ product.title }}" data-price="{{ product.price|floatformat:2 }}">Купить</button>
+                {% else %}
+                <p class="price_no">Уточняйте цену</p>
+                {% endif %}
+            </div></div>
+            {% empty %}
+            <p>Товары отсутствуют.</p>
+            {% endfor %}
+        </div></div>
+
+
+</main>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/basket.js' %}" defer></script>
+<script src="{% static 'js/order_form.js' %}" defer></script>
+<script src="{% static 'js/viewed.js' %}" defer></script>
+{% endblock %}

@@ -1,0 +1,197 @@
+{% extends 'basic.html' %}
+{% load static %}
+
+{% block title %}Электротовары Логойск — СпецЭлектроБелТорг: электро-, газо- и водоснабжение{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/main_page.css' %}">
+<link rel="stylesheet" href="{% static 'css/catalog.css' %}">
+{% endblock %}
+{% block meta %}
+<meta name="description" content="Продажа электротехники, монтаж и обслуживание систем электроснабжения, газоснабжения и водоснабжения в Логойске. Надёжные решения для частных и промышленных объектов.">
+<meta name="keywords" content="электротовары, электроснабжение, газоснабжение, водоснабжение, канализация, монтаж, проектирование, Логойск">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+
+  <!--  ===кнопка Каталог===-->
+<a href="{% url 'catalog' %}" class="catalog-btn" style="margin: 0 auto 10px;">Посмотреть весь каталог</a>
+ <!-- === Верхние кнопки разделов === -->
+  <div class="catalog-top-buttons">
+    {% for rubric in rubrics %}
+      <a href="{% url 'subrubrics' rubric.name_translit %}" class="catalog-btn">
+        {% if rubric.rubric_name == "Электрика" %}
+          <i class="fas fa-bolt"></i>
+        {% elif rubric.rubric_name == "Сантехника" %}
+          <i class="fas fa-faucet"></i>
+        {% elif rubric.rubric_name == "Газификация" %}
+          <i class="fas fa-fire"></i>
+        {% else %}
+          <i class="fas fa-folder"></i>
+        {% endif %}
+        <span>{{ rubric.rubric_name }}</span>
+      </a>
+    {% endfor %}
+  </div>
+
+
+    <div style="text-align: center; margin-bottom: 10px;">
+    <h2 style="color: black; border-bottom: 2px solid #e6c200; display: inline-block; padding-bottom: 5px;">Новинки</h2>
+  </div> <div class="carousel-wrapper">
+        <div class="product-carousel">
+        {% for product in new_products %}
+            <div class="product-new-catalog">
+            {% if product.photo %}
+                <img src="{{ product.photo.url }}" alt="{{ product.title }}">
+            {% else %}
+                <img src="{% static 'image/default-product.png' %}" alt="Нет изображения">
+            {% endif %}
+
+            <!-- ==название товара для генерации карусели просмотренных товаров=== -->
+            {% include 'includes/product_card_for_viewed.html' %}
+            <div class="card-bottom">
+              {% if product.price %}
+              <p class="price">{{ product.price }} BYN</p>
+              <button  type="button" class="basket" data-title="{{ product.title }}" data-price="{{ product.price|floatformat:2 }}">Купить</button>
+              {% else %}
+              <p class="price_no">Уточняйте цену</p>
+              {% endif %}
+            </div></div>
+        {% empty %}
+        <p>Товары отсутствуют.</p>
+        {% endfor %}
+    </div> </div>
+
+      <div style="text-align: center; margin-bottom: 10px; margin-top: 10px;">
+         <h2 style="color: black; border-bottom: 2px solid #e6c200; display: inline-block; padding-bottom: 5px;">Популярные товары</h2>
+        </div> <div class="carousel-wrapper">
+              <div class="product-carousel">
+            {% for product in popular_products %}
+            <div class="product-new-catalog">
+              {% if product.photo %}
+                <img src="{{ product.photo.url }}" alt="{{ product.title }}">
+              {% else %}
+                <img src="{% static 'image/default-product.png' %}" alt="Нет изображения">
+              {% endif %}
+
+              <!-- ==название товара для генерации карусели просмотренных товаров=== -->
+              {% include 'includes/product_card_for_viewed.html' %}
+                <div class="card-bottom">
+                {% if product.price %}
+                <p class="price">{{ product.price }} BYN</p>
+                <button  type="button" class="basket" data-title="{{ product.title }}" data-price="{{ product.price|floatformat:2 }}">Купить</button>
+                {% else %}
+                <p class="price_no">Уточняйте цену</p>
+                {% endif %}
+            </div></div>
+            {% empty %}
+            <p>Товары отсутствуют.</p>
+            {% endfor %}
+        </div> </div>
+
+<section class="catalog-section">
+
+  {% for rubric in rubrics %}
+    <div class="category-block">
+      <!-- Заголовок и иконка категории -->
+      <div class="category-header">
+        {% if rubric.rubric_name == "Электрика" %}
+          <i class="fas fa-bolt category-icon"></i>
+        {% elif rubric.rubric_name == "Сантехника" %}
+          <i class="fas fa-faucet category-icon"></i>
+        {% elif rubric.rubric_name == "Газификация" %}
+          <i class="fas fa-fire category-icon"></i>
+        {% else %}
+          <i class="fas fa-folder category-icon"></i>
+        {% endif %}
+        <h3>{{ rubric.rubric_name }}</h3>
+      </div>
+
+      <!-- Подкатегории -->
+      <div class="catalog-grid">
+        {% if rubric.rubric_name == "Электрика" %}
+          {% for subrubric in rubric.electro_set.all %}
+            <a href="{% url 'products' rubric.name_translit subrubric.title_translit %}" class="catalog-card">
+              <i class="fas fa-lightbulb"></i>
+              <span>{{ subrubric.title }}</span>
+            </a>
+          {% endfor %}
+        {% elif rubric.rubric_name == "Сантехника" %}
+          {% for subrubric in rubric.santeh_set.all %}
+            <a href="{% url 'products' rubric.name_translit subrubric.title_translit %}" class="catalog-card">
+              <i class="fas fa-tint"></i>
+              <span>{{ subrubric.title }}</span>
+            </a>
+          {% endfor %}
+        {% elif rubric.rubric_name == "Газификация" %}
+          {% for subrubric in rubric.gas_set.all %}
+            <a href="{% url 'products' rubric.name_translit subrubric.title_translit %}" class="catalog-card">
+              <i class="fas fa-fire"></i>
+              <span>{{ subrubric.title }}</span>
+            </a>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</section>
+  <!-- Горизонтальная карусель с индикаторами -->
+ <section class="reviews-container">
+         <div class="reviews-header">
+           <h2>О нас пишут</h2></div>
+  <div class="carousel">
+    <div id="carousel-inner">
+      <div class="review">
+        <strong>Владислав Оранский</strong><br>
+          <em>⭐⭐⭐⭐⭐</em>
+        <p>Удивительно обширный ассортимент для небольшого магазина, есть не только электро но и сантех и газ арматура запчасти</p>
+        <small>Источник: <a href="https://yandex.by/maps/-/CLFhI0MN" target="_blank">Яндекс.Карты</a></small>
+      </div>
+      <div class="review">
+        <strong>Sergio Kuniawelly</strong><br>
+          <em>⭐⭐⭐⭐⭐</em>
+        <p>Отличный магазин, разнообразие ассортимента как по электрике, так и по сантехнике</p>
+        <small>Источник: <a href="https://yandex.by/maps/-/CLFhI0MN" target="_blank">Яндекс.Карты</a></small>
+      </div>
+      <div class="review">
+        <strong>владимир рулькевич</strong><br>
+          <em>⭐⭐⭐⭐⭐</em>
+        <p>Хороший магазин электротоваров, ассортимент большой, удобное расположение со стоянкой</p>
+        <small>Источник: <a href="https://yandex.by/maps/-/CLFhI0MN" target="_blank">Яндекс.Карты</a></small>
+      </div>
+      <div class="review">
+        <strong>Роман Бархетов</strong><br>
+          <em>⭐⭐⭐⭐⭐</em>
+        <p>Делал ремонт в квартире.Сгорел электопатрон . Пошёл в этот магазин и удивился разнообразию товара😲так как там я нашёл и самотеры и дюбель квозди и даже сантехнику с инструментом!!! Отличный магазин!!! И продавцы всегда помогут!!!Всем рекомендую!!!</p>
+        <small>Источник: <a href="https://yandex.by/maps/-/CLFhI0MN" target="_blank">Яндекс.Карты</a></small>
+      </div>
+      <div class="review">
+        <strong>Юрий</strong><br>
+          <em>⭐⭐⭐⭐⭐</em>
+        <p>Отличный магазин электро, сантех товаров, есть инструменты и материалы, крепеж.</p>
+        <small>Источник: <a href="https://yandex.by/maps/-/CLFhI0MN" target="_blank">Яндекс.Карты</a></small>
+      </div>
+      <div class="review">
+        <strong>Юра Станик</strong><br>
+          <em>⭐⭐⭐⭐⭐</em>
+        <p>Есть большое количество товара которое не купишь в районе, возможность приобрести товар под заказ</p>
+        <small>Источник: <a href="https://yandex.by/maps/-/CLFhI0MN" target="_blank">Яндекс.Карты</a></small>
+      </div>
+      <div class="review">
+        <strong>Евгений Глеб</strong><br>
+          <em>⭐⭐⭐⭐⭐</em>
+        <p>Хороший новый магазин,на новом месте</p>
+        <small>Источник: <a href="https://yandex.by/maps/-/CLFhI0MN" target="_blank">Яндекс.Карты</a></small>
+      </div>
+    </div>
+    </div>
+</section>
+
+
+</main>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/reviews.js' %}" defer></script>
+<script src="{% static 'js/viewed.js' %}" defer></script>
+{% endblock %}

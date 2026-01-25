@@ -1,0 +1,189 @@
+html { scroll-behavior: smooth; }
+:root {
+  --header-height: 10px;
+  --top-offset: 20px;
+  --controls-height: 20px;
+}
+.top-controls {
+  position: fixed;
+  top: var(--top-offset);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 2vw, 20px);
+  background: transparent;
+}
+.anchor-nav {
+  background: #f0f0f0;
+  border-radius: 14px;
+  padding: 10px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  width: max-content;
+}
+.anchor-nav ul {
+  display: flex;
+  gap: clamp(10px, 3vw, 30px);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.main-content { padding-top: 10px; }
+.anchor-nav a {
+  color: #6d7378;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 6px 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-size: clamp(0.85rem, 0.9vw + 0.3rem, 1rem);
+}
+.anchor-nav a:hover,
+.anchor-nav a.active {
+  color: black;
+  border-bottom: 2px solid #ffd700;
+  background-color: rgba(255, 215, 0, 0.15);
+  transition: all 0.25s ease;
+}
+:target { scroll-margin-top: calc(var(--controls-height) + var(--top-offset)); }
+.pay_section {
+  position: relative;
+  margin: 2em auto;
+  padding: 1.5em 2em;
+}
+.pay_section::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(136,136,136,0.4), transparent);
+}
+.payments {
+  color: black;
+  font-size: clamp(1rem, 1vw + 1rem, 2rem);
+  margin: 10px 0;
+  border-left: 4px solid #e6c200;
+  padding-left: 10px;
+}
+.doc {
+  text-align: center;
+  font-weight: 700;
+  text-indent: 1.25em;
+  font-size: clamp(1rem, 0.8vw + 0.7rem, 1.4rem);
+}
+.point {
+  text-indent: 1.25em;
+  margin: 0.5em 0;
+  font-size: clamp(0.9rem, 1vw + 0.8rem, 1.1rem);
+  line-height: clamp(1.4, 1.5vw + 1.2, 1.6);
+  text-align: justify;
+  hyphens: auto;
+}
+.utv {
+  text-align: left;
+  font-weight: 700;
+  white-space: pre-line;
+}
+.coul {
+  margin: 0.5em 0 1em 2em;
+  padding: 0;
+}
+.ulli {
+  margin: 0.4em 0;
+  line-height: 1.5;
+  text-align: justify;
+}
+.cook-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: clamp(1em, 2vw, 2em) 0;
+  font-size: clamp(0.85rem, 1vw, 0.95rem);
+}
+.cook-table th,
+.cook-table td {
+  border: 1px solid #ccc;
+  padding: clamp(0.4em, 1vw, 0.6em) clamp(0.6em, 1.5vw, 0.8em);
+  vertical-align: top;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.name_cook,
+.item_cookie {
+  border: 1px solid #ccc;
+  padding: clamp(0.4em, 1vw, 0.6em) clamp(0.6em, 1.5vw, 0.8em);
+  vertical-align: top;
+}
+.name_cook {
+  text-align: center;
+  font-weight: 700;
+  background-color: #f5f5f5;
+  font-size: clamp(0.9rem, 1vw, 1rem);
+}
+.browser-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2em;
+  list-style: none;
+  padding: 0;
+  margin: 1em 0;
+  justify-content: center;
+}
+.browser-list li { margin: 0; }
+.browser-list a {
+  text-decoration: none;
+  color: #e6c200;
+  white-space: nowrap;
+  font-size: clamp(0.8rem, 1vw, 1rem);
+  padding: clamp(0.2em, 0.5vw, 0.4em) clamp(0.5em, 1vw, 1em);
+}
+.browser-list a:hover { text-decoration: underline; }
+.policy-footer {
+  margin-top: 3em;
+  text-indent: 0;
+  text-align: right;
+  font-size: 0.9rem;
+  color: #666;
+}
+.back-btn {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
+}
+.back-btn:hover {
+  background: #e6c200;
+  transform: translateX(-2px);
+}
+.adres_p {
+  color: #e6c200;
+  text-decoration: none;
+}
+.adres_p:hover { text-decoration: underline; }
+@media (max-width: 1000px) {
+  :root { --controls-height: clamp(40px, calc(60px + 2vw), 70px); }
+  :target { scroll-margin-top: calc(var(--controls-height) + var(--top-offset)); }
+  .main-content { padding-top: clamp(70px, calc(80px + 2vw), 90px); }
+  .top-controls {
+    left: clamp(10px, 5vw, 40px);
+    right: clamp(10px, 5vw, 40px);
+    transform: none;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: clamp(4px, 2vw, 8px);
+  }
+  .back-btn { flex-shrink: 0; }
+  .anchor-nav { width: auto; }
+  .anchor-nav ul {
+    flex-wrap: wrap;
+    gap: 2px 6px;
+  }
+}
